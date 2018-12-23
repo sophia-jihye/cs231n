@@ -72,7 +72,7 @@ class KNearestNeighbor(object):
             # not use a loop over dimension.                                    #
             #####################################################################
             if (i == 0 and j == 0):
-                print(np.square(X[i] - self.X_train[j]))
+                #print(np.square(X[i] - self.X_train[j]))
             dists[i,j] = np.sqrt( np.sum( np.square(X[i] - self.X_train[j]) ) )
             #####################################################################
             #                       END OF YOUR CODE                            #
@@ -96,7 +96,7 @@ class KNearestNeighbor(object):
         # points, and store the result in dists[i, :].                        #
         #######################################################################
         if (i == 0):
-            print(np.square(X[i] - self.X_train))
+            #print(np.square(X[i] - self.X_train))
         dists[i,:] = np.sqrt(np.sum(np.square(X[i] - self.X_train), axis=1))
         #######################################################################
         #                         END OF YOUR CODE                            #
@@ -167,7 +167,7 @@ class KNearestNeighbor(object):
         #########################################################################
         closest_y = self.y_train[np.argsort(dists[i])[:k]]
         if (i==1):
-            print(closest_y)
+            #print(closest_y)
         #########################################################################
         # TODO:                                                                 #
         # Now that you have found the labels of the k nearest neighbors, you    #
