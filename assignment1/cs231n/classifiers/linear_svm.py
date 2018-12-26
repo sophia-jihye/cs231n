@@ -34,13 +34,17 @@ def svm_loss_naive(W, X, y, reg):
       margin = scores[j] - correct_class_score + 1 # note delta = 1
       if margin > 0:
         loss += margin
+        dW[:,j] += np.transpose(X[i])
+        dW[:,y[i]] -= np.transpose(X[i])
 
   # Right now the loss is a sum over all training examples, but we want it
   # to be an average instead so we divide by num_train.
   loss /= num_train
+  dW /= num_train
 
   # Add regularization to the loss.
   loss += reg * np.sum(W * W)
+  dW += reg * W
 
   #############################################################################
   # TODO:                                                                     #
@@ -69,7 +73,12 @@ def svm_loss_vectorized(W, X, y, reg):
   # Implement a vectorized version of the structured SVM loss, storing the    #
   # result in loss.                                                           #
   #############################################################################
-  pass
+  num_train = X.shape[0]
+  scores = np.dot(X,W)
+  correct_class_score = scores[range(num_train) , y].reshape(-1,1)
+  margin = np.maximum(0, scores - correct_class_score + 1 ) # note delta = 1
+  margin[range(num_train), y] = 0 # note delta = 1
+  loss = np.sum(margin) / num_train + 1.0 * reg * np.sum(W * W)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -84,7 +93,16 @@ def svm_loss_vectorized(W, X, y, reg):
   # to reuse some of the intermediate values that you used to compute the     #
   # loss.                                                                     #
   #############################################################################
-  pass
+  X_mask = np.zeros(margin.shape)
+  X_mask[margin > 0] = 1
+  
+  # when it comes to a success case, subtract the amount of incorrect prediction
+  X_mask_sum = np.sum(X_mask, axis=1)
+  X_mask[range(num_train), y] = -1 * X_mask_sum    
+
+  dW += np.dot(np.transpose(X), X_mask)
+  dW /= num_train
+  dW += reg * W
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
