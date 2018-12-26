@@ -13,3 +13,10 @@ jihye's cs231n (2018) assignments
 <figure>
   <img src='./asset/a01-svm.png' width='50%'>
 </figure>
+
+* Softmax
+  - [softmax derivative](http://ufldl.stanford.edu/wiki/index.php/Softmax_Regression#Cost_Function)
+
+<figure>
+  <img src='./asset/a01-softmax.png' width='50%'>
+</figure>

@@ -29,7 +29,20 @@ def softmax_loss_naive(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+  num_train = X.shape[0]
+  num_classes = W.shape[1]
+    
+  for i in range(num_train):
+    scores = X[i].dot(W)
+    scores -= np.max(scores) # f = np.array([123, 456, 789]) -> f becomes [-666, -333, 0]
+    p = np.exp(scores) / np.sum(np.exp(scores)) # safe to do, gives the correct answer
+    loss += -np.log(p[y[i]])   # Even if it predicted correctly with high probability but smaller than 1, it is loss.
+
+    for j in range(num_classes):
+      dW[:, j] += (p[j] - (j==y[i])) * X[i]
+
+  loss = loss / num_train + reg * np.sum(W * W)
+  dW = dW / num_train + reg * W 
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
@@ -53,7 +66,20 @@ def softmax_loss_vectorized(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+  num_train = X.shape[0]
+  num_classes = W.shape[1]
+    
+  scores = X.dot(W)  
+  scores -= np.max(scores, axis=1).reshape(-1,1) # f = np.array([123, 456, 789]) -> f becomes [-666, -333, 0]
+  p = np.exp(scores) / np.sum(np.exp(scores), axis=1).reshape(-1,1) # safe to do, gives the correct answer
+  loss = -np.sum(np.log(p[range(num_train), y]))  
+  
+  p_mask = p.copy()
+  p_mask[range(num_train), y] -= 1
+  dW = np.dot(np.transpose(X), p_mask)
+    
+  loss = loss / num_train + reg * np.sum(W * W)
+  dW = dW / num_train + reg * W
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
