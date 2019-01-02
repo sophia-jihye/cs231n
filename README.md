@@ -20,3 +20,10 @@ jihye's cs231n (2018) assignments
 <figure>
   <img src='./asset/a01-softmax.png' width='50%'>
 </figure>
+
+* Back-propagation
+
+<figure>
+  <img src='./asset/a02-backprop.png' width='50%'>
+</figure>
+
