@@ -103,8 +103,8 @@ class TwoLayerNet(object):
         # of 0.5 to simplify the expression for the gradient.                      #
         ############################################################################
         loss, dscores = softmax_loss(scores, y)
-        _reg1 = 0.5 * self.reg * np.sum(np.power(self.params['W1'], 2))
-        _reg2 = 0.5 * self.reg * np.sum(np.power(self.params['W2'], 2))
+        _reg1 = 0.5 * self.reg * np.sum(np.power(self.params['W1'], 2))   # weight decay
+        _reg2 = 0.5 * self.reg * np.sum(np.power(self.params['W2'], 2))   # weight decay
         loss = loss + _reg1 + _reg2
         dout1, dw2, db2 = affine_relu_backward(dscores, ar2_cache)
         grads['b2'] = db2 
@@ -249,7 +249,22 @@ class FullyConnectedNet(object):
         # self.bn_params[1] to the forward pass for the second batch normalization #
         # layer, etc.                                                              #
         ############################################################################
-        pass
+        layers = {"layer0" : X}
+        cache = {}
+        # forward
+        for i in range(self.num_layers):
+            W = self.params["W" + str(i+1)]
+            b = self.params["b" + str(i+1)]
+            layer = "layer" + str(i+1)
+            prev_layer = "layer" + str(i)
+            if i < self.num_layers - 1:
+                #hidden layers
+                layers[layer], cache[layer] = affine_relu_forward(layers[prev_layer], W, b)
+            else :
+                #output layer
+                layers[layer], cache[layer] = affine_forward(layers[prev_layer], W, b)
+        
+        scores = layers["layer" + str(self.num_layers)]
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
@@ -272,7 +287,26 @@ class FullyConnectedNet(object):
         # automated tests, make sure that your L2 regularization includes a factor #
         # of 0.5 to simplify the expression for the gradient.                      #
         ############################################################################
-        pass
+        last = self.num_layers
+        W = "W" + str(last)
+        b = "b" + str(last)
+        layer = "layer" + str(last)
+        # softmax loss
+        loss, dy = softmax_loss(scores, y)
+
+        # backprop output layer
+        dh, grads[W], grads[b] = affine_backward(dy, cache[layer])
+        loss += 0.5 * self.reg * np.sum(self.params[W] * self.params[W])
+        grads[W] += self.reg * self.params[W]
+        # backprop
+        for i in reversed(range(last-1)):
+            W = "W" + str(i+1)
+            b = "b" + str(i+1)
+            layer = "layer" + str(i+1)
+
+            dh, grads[W], grads[b] = affine_relu_backward(dh, cache[layer])
+            loss += 0.5 * self.reg * np.sum(self.params[W] * self.params[W]) # reg loss
+            grads[W] += self.reg * self.params[W] # reg grad
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
