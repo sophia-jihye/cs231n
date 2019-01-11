@@ -184,6 +184,8 @@ class Solver(object):
 
         # Perform a parameter update
         for p, w in self.model.params.items():
+            if (p.startswith('gamma') or p.startswith('beta')):
+                continue
             dw = grads[p]
             config = self.optim_configs[p]
             next_w, next_config = self.update_rule(w, dw, config)
