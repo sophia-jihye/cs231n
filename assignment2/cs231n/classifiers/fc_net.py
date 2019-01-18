@@ -203,7 +203,6 @@ class FullyConnectedNet(object):
             self.dropout_param = {'mode': 'train', 'p': dropout}
             if seed is not None:
                 self.dropout_param['seed'] = seed
-
         # With batch normalization we need to keep track of running means and
         # variances, so we need to pass a special bn_param object to each batch
         # normalization layer. You should pass self.bn_params[0] to the forward pass
@@ -259,6 +258,8 @@ class FullyConnectedNet(object):
             prev_layer = "layer" + str(i)
             if i < self.num_layers - 1:
                 #hidden layers
+                if self.use_dropout:
+                    dropout_forward(layers[prev_layer], self.dropout_param)
                 layers[layer], cache[layer] = affine_relu_forward(layers[prev_layer], W, b)
             else :
                 #output layer
